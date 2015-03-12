@@ -70,6 +70,7 @@ Fisher Kernels
 
 \begin{frame}
 \frametitle{Paper presentation : Feature Selection}
+\subsection{Feature Selection}
 \begin{itemize}
 \item Only practical alternative
 \item Popular idea : select features from multiple views with a baseline retrieval system
@@ -105,6 +106,8 @@ Left image is considered a query image. Top using all feature, bottom using sele
 
 \begin{frame}
 \frametitle{Related Work: Multiple Views}
+\section{Related Word}
+\subsection{Multiple Views}
 $\blacktriangleright$ Feature selection has recently become a popular way of reducing index space for image retrieval
 
 \vspace{0.3cm}
@@ -127,6 +130,7 @@ $\Rightarrow$ Require multiple views of the same object
 
 \begin{frame}
 \frametitle{Related Work: Unique views}
+\subsection{Unique views}
 Turcot \& Lowe (first approach of this kind)
 \begin{itemize}
 \item keep the largest scale features in the index $\Leftrightarrow$ reducing image resolution
@@ -141,6 +145,7 @@ Tuytelaars \& al.
 \item detect collinear intersections
 \end{itemize}
 \end{frame}
+
 \begin{frame}
 \frametitle{Related Work: Unique views}
 Cornelius \& al.
@@ -155,6 +160,7 @@ Cornelius \& al.
 
 \begin{frame}
 \frametitle{Contribution to Feature Selection}
+\section{Contribution to Feature Selection}
 $\blacktriangleright$ 2 alternatives unsupervised methods for feature selection
 
 \vspace{0.3cm}
@@ -184,7 +190,7 @@ Two issues:
 
 \begin{frame}
 \frametitle{Contribution to Feature Selection : Representation}
-
+\subsection{Representation}
 $\blacktriangleright$ An image is represented by a set of local features $X$.
 
 \begin{itemize}
@@ -219,17 +225,101 @@ With:
 
 \begin{frame}
 \frametitle{Contribution to Feature Selection : Spatial self-Matching}
+\subsection{Spatial self-Matching}
+$\blacktriangleright$ Need strong evidence of local symmetries or repeating patterns than just a set of independent correspondences.
 
-lolo
+\vspace{0.2cm}
+Follow approache, inspired by the method of \textit{fast spatial matching} (FSM) introduced by J. Philbin
 
+\vspace{0.2cm}
+$\Rightarrow$ The aim is to seek groups of geometrically verified correspondences call : \textit{inliers}
 
 \end{frame}
 
+\begin{frame}
+\frametitle{Contribution to Feature Selection : FSM}
 
+We have for each correspondance $c = (x,y) \in C_t(X)$ a similarity transformation represented by a matrix $t(c) \in \mathbb{R}^{3x3}$ with
+\[
+t(x,y) = t(c) = 
+\begin{bmatrix}
+M(c) & p(c) \\
+0^T & 1
+\end{bmatrix}
+\]
 
+where :
+\begin{itemize}
+\item $p(c)$ is the relative position by translation. $p(c) = p(y) - M(c)p(x)$
+\item $M(c) = \sigma(c)R(c)$ where $R(c) = R(y)R(x)^{-1}$
+\item $R(x)$ is a orthogonal matrix of x orientation 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : FSM}
+$\blacktriangleright$ From the transformation $h = t(c)$, position $p(z) \in \mathbb{R}^3$ is transformed to the matrix product $hp(z)$
+
+\vspace{0.2cm}
+$\blacktriangleright$ FSM is a RANSAC-like process : non-deterministic algorithm to estimate parameters of a mathematical model from a set of observed data which contains outliers.
+
+\vspace{0.2cm}
+$\Rightarrow$ We can determine all inliers among all correspondences:
+\[ I_C(h) = \{(x,y) \in C :  \| p(y) - hp(x) \| < \epsilon \}  \]
+where $\epsilon$ is the inlier theshold and $\epsilon > 0$.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : FSM}
+$\blacktriangleright$ FSM seek the hypothesis $h \in t(C)$ with the highest inlier support $\mid I_C(h) \mid$
+
+\vspace{0.2cm}
+$\Rightarrow$ Define the inlier strenght $\alpha(c)$ of correspondence $c$ as the largest inlier support :
+\[ \alpha_C(c) = max\{\mid I_C(h) \mid : h \in H_C(c)\} \]
+where $H_C(c)$ is set of associated hypotheses
+
+\vspace{0.3cm}
+$\blacktriangleright$ Once all inlier strenghts have been computed, the set of spatially verified correspondances $\alpha(C) \subseteq C$ is :
+\[\alpha(C) = \{ c \in C : \alpha_C(c) \geq \tau_\alpha \} \]
+
+where $\tau_\alpha$ is the \textit{selection} threshold and $\tau_\alpha > 0$
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : FSM to SSM}
+$\blacktriangleright$ The FSM algorithme is quadratic in the number of correspondences at all time.
+
+\vspace{0.2cm}
+$\blacktriangleright$ The SSM algorithme is quadratic only in the worst case (when no inliers are found)
+
+\vspace{0.2cm}
+$\Rightarrow$ They skip hypotheses arising form correspondence that have already been counted as inliers for previous hypotheses.
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : SSM algorithm}
+\begin{center}
+\includegraphics[scale=0.97]{algo1.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : Direct selection}
+$\blacktriangleright$ From a image with tentative correspondences $C = C_t(X)$
+
+\vspace{0.2cm}
+$\Rightarrow$ \textbf{Direct selection} of features $x \in X$ which are participating in some verified correspondence in :
+\[ \alpha_d(X) = \pi^1(\alpha(C)) \cup \pi^2(\alpha(C)) \]
+
+where $\pi^i$ is the i-th projection of binary relation $S \subseteq X_1  x  X_2$, collecting the i-th element of all its pairs like:
+\[ \pi^i(S) = \{x^i \in X : (x^1, x^2) \in S\} \]
+
+\end{frame}
 
 \begin{frame}
 \frametitle{Validation}
+\section{Validation}
 Testing the behavior of SSM and HPSM under different parameter settings and compare performance to other feature selection methods for single image.
 
 \vspace{0.3cm}
@@ -243,6 +333,7 @@ Used datasets:
 
 \begin{frame}
 \frametitle{Validation : Protocol}
+\subsection{Protocol}
 $\blacktriangleright$ The experimentation follows this steps:
 \begin{enumerate}
 \item Extract features and descriptors with SURF algorithm
@@ -254,6 +345,7 @@ $\blacktriangleright$ The experimentation follows this steps:
 
 \begin{frame}
 \frametitle{Validation : Key Performance Indicators}
+\subsection{Key Performance Indicators}
 $\blacktriangleright$ Measure retrieval performance by mean Average Precision (mAP) over all queries.
 
 \vspace{0.3cm}
@@ -268,7 +360,7 @@ $\blacktriangleright$ Running time refers to the entire process of feature selec
 
 \begin{frame}
 \frametitle{Validation : Tuning}
-
+\subsection{tuning}
 Fixed variables :
 \begin{itemize}
 \item similarity threshold : $\delta = 0.1$
@@ -305,6 +397,7 @@ Best result obtained for $k = 3$ and $\tau_\beta = 0.4$ for an average running t
 
 \begin{frame}
 \frametitle{Validation : Comparisons}
+\subsection{Comparisons}
 \begin{center}
 \includegraphics[scale=0.55]{figure10}
 \end{center}
