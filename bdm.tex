@@ -318,6 +318,101 @@ where $\pi^i$ is the i-th projection of binary relation $S \subseteq X_1  x  X_2
 \end{frame}
 
 \begin{frame}
+\frametitle{Contribution to Feature Selection : HPM}
+$\blacktriangleright$ Self spatial matching process is based on FSM
+\begin{itemize}
+\item quadratic in the number of correspondences
+\item $\vert C \vert$ in the worst case (given a set of tentative correspondences C)
+\end{itemize}
+
+$\blacktriangleright$ Hough pyramid matching (HPM)
+\begin{itemize}
+\item relaxed spatial matching method
+\item linear in $\vert C \vert$
+\item outperforms FSM in spatial re-ranking for image retrieval
+\item faster because :
+\begin{itemize}
+\item not requiring inlier counting
+\item free of any threshold defining what an inlier is
+\item it assigns a strength value to each individual correspondence, reflecting whether it is geometrically consistent
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : HPM}
+$\blacktriangleright$ HPM is :
+\begin{itemize}
+\item the basis for a faster self-matching alternative for feature selection
+\item use the individual strength of each correspondence
+\end{itemize}
+Given a set of tentative correspondences $C$
+\begin{itemize}
+\item subset of $X^2$ (self-matching)
+\item subset of $X$ x $Y$ (flipped-matching)
+\end{itemize}
+$\Rightarrow$ each correspondance $c = (x,y) \in C$ gives rise to a 4-dof transformation
+
+$\Rightarrow$ transformation parameter vector $g(c) \in \mathbb{R}^3$
+
+$\blacktriangleright$ The problem is now to detect region of high density in this space $\rightarrow$ \textit{mode seeking}
+\begin{itemize}
+\item dimensionality is low
+\item pyramide matching is ideal for linearizing the process
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : Pyramid Matching}
+
+$\blacktriangleright$ Pyramid matching
+\begin{itemize}
+\item an L-level \textit{hierarchical partition} of the transformation space is constructed as a sequence of partitions $B_0, ..., B_{L-1}$
+\item each bin in $B_l$ is split into $2^4$ bins in $B_{l+1}$
+\item a histogram pyramid is then constructed by distributing correspondences to bins at all levels of the hierarchy
+\item correspondences falling into the same bin are grouped
+\item the most geometrically consistent groups in the lower levels of the hierarchy, with larger groups considered to be more consistent
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : HPSM}
+
+HPSM to find the \textit{verified} correspondences $\beta(C) \subseteq C$
+\begin{center}
+$\beta(C) = \{c \in C : \beta(c) \geq \tau_\alpha \}$
+\end{center}
+
+with \textit{selection threshold} $\tau_\alpha \in [0, 1]$
+
+\begin{itemize}
+\item direct $\beta_d$
+\item flipped $\beta_f$
+\item back-projected $\beta'_f$
+\item complete $\beta$
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : HPSM Algorithm}
+\begin{center}
+\includegraphics[scale=0.34]{algo2}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Contribution to Feature Selection : HPSM Flipped Matching}
+\begin{center}
+\includegraphics[scale=0.3]{figure5}
+\end{center}
+\end{frame}
+
+
+
+\begin{frame}
 \frametitle{Validation}
 \section{Validation}
 Testing the behavior of SSM and HPSM under different parameter settings and compare performance to other feature selection methods for single image.
@@ -376,6 +471,7 @@ Tunnable variable :
 \end{itemize}
 
 \end{frame}
+
 
 \begin{frame}
 \frametitle{Validation : Tuning}
